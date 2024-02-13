@@ -1,7 +1,5 @@
-<script>
-    import '../app.css';
+<script lang="ts">
 
-    
     import Header from "$lib/components/individuels/Header.svelte"
     import { fade  } from 'svelte/transition';
     
@@ -12,7 +10,10 @@
 <svelte:head>
     <title>ISATI BDE</title>
     <meta name="description" content="">
+    <link rel="stylesheet" href="./app.css">
+
 </svelte:head>
+
 
 
 <div class="app">
