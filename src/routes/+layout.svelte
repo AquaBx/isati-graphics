@@ -1,4 +1,7 @@
 <script>
+    import '../app.css';
+
+    
     import Header from "$lib/components/individuels/Header.svelte"
     import { fade  } from 'svelte/transition';
     
