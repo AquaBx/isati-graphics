@@ -29,11 +29,11 @@
         private texte:string
         private ctx:CanvasRenderingContext2D
         private canvas:HTMLCanvasElement
+        private padding : number
 
         private imageHeight = 500
-        private padding = 50
 
-        constructor(backgroundURL:string,imageFiles:FileList|undefined,offsetLeft:number,offsetTop:number,texte:string,title:string){
+        constructor(backgroundURL:string,padding:number,imageFiles:FileList|undefined,offsetLeft:number,offsetTop:number,texte:string,title:string){
             this.canvas = document.createElement("canvas")
             this.canvas.height = 1440
             this.canvas.width = 1440
@@ -41,6 +41,7 @@
 
             this.texte = texte
             this.title = title
+            this.padding = padding
 
             this.offsetLeft = offsetLeft
             this.offsetTop = offsetTop
@@ -93,7 +94,7 @@
             this.ctx.fillStyle = "#D82B2B"
             
             this.ctx.fillText(this.title,this.offsetLeft + 40,this.offsetTop)
-            this.offsetTop += 120*1.25
+            this.offsetTop += 120
         }
 
         private async drawImage(){
@@ -111,39 +112,43 @@
 
             let p = this.texte.split("\n")
 
-            let lineheight : number
-
             for (let l of p){
+                let fontSize
+                let fontWeight
+                let color
+                
                 if (l.startsWith("#")){
-                    this.ctx.font = "600 80px LeagueSpartan";
-                    this.ctx.fillStyle = "#262626"
-                    lineheight = 60*1.25
-
-                    this.ctx.fillText(l.slice(1), this.offsetLeft, this.offsetTop);
+                    fontSize = 80
+                    fontWeight = 700
+                    color = "#262626"
+                    l = l.slice(1)
                 }
                 else {
-                    this.ctx.font = "500 60px LeagueSpartan";
-                    this.ctx.fillStyle = "#262626"
-                    lineheight = 40*1.25
-
-                    this.ctx.fillText(l, this.offsetLeft, this.offsetTop);
+                    fontSize = 60
+                    fontWeight = 500
+                    color = "#262626"
                 }
 
-                this.offsetTop += lineheight*1.25
+                this.ctx.fillStyle = color
+                this.ctx.font = `${fontWeight} ${fontSize}px LeagueSpartan`;
+                this.ctx.fillText(l, this.offsetLeft, this.offsetTop);
+
+                this.offsetTop += fontSize
             }
         }
 
         async draw(destctx : CanvasRenderingContext2D) {
-            this.ctx.clearRect(0, 0, 1440, 1440);
-
+           
             await this.drawBackground()
             this.drawTitle()
-            // this.offsetTop += this.padding
+            this.offsetTop += this.padding
             this.drawTexte()
             // this.offsetTop += this.padding
             await this.drawImage()
-
+            
+            destctx.beginPath()
             destctx.drawImage(this.canvas, 0, 0);
+
 
         }
 
@@ -152,17 +157,12 @@
 
     $effect(() => {
 
-        if (variante == "1"){
-            template = new Template("./fond_idd_1.png",files,200,250,texte,title)
-            template.draw(ctx)
-        }
-        else if (variante == "2"){
-            template = new Template("./fond_idd_2.png",files,200,250,texte,title)
-            template.draw(ctx)
-        }
-        else if (variante == "3") {
-            template = new Template("./fond_idd_3.png",files,200,250,texte,title)
-            template.draw(ctx)
+        switch (variante) {
+            case "0" : template = new Template("./demo.png"                ,50,files,150,235,texte,title);template.draw(ctx);break;
+            case "1" : template = new Template("./templates/Template_1.png",50,files,150,235,texte,title);template.draw(ctx);break;
+            case "2" : template = new Template("./templates/Template_2.png",50,files,150,235,texte,title);template.draw(ctx);break;
+            case "3" : template = new Template("./templates/Template_3.png",50,files,150,235,texte,title);template.draw(ctx);break;
+            case "4" : template = new Template("./templates/Template_4.png",50,files,150,235,texte,title);template.draw(ctx);break;
         }
 
     })
@@ -186,9 +186,11 @@
         <textarea bind:value={texte} cols="30" rows="10"></textarea>
         <label>Template</label>
         <select bind:value={variante}>
+            <option value="0">Fond Demo (ne pas utiliser, juste pour debug)</option>
             <option value="1" selected={true}>Fond 1</option>
             <option value="2">Fond 2</option>
             <option value="3">Fond 3</option>
+            <option value="4">Fond 4</option>
         </select>
     </form>
 
