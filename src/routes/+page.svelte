@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import Button from "$lib/components/individuels/Button.svelte";
+import { onMount } from "svelte";
 
     let title = $state("Grand titre")
     let texte = $state("#Titre\nsalut ceci est une démonstration")
@@ -131,9 +132,32 @@
 
                 this.ctx.fillStyle = color
                 this.ctx.font = `${fontWeight} ${fontSize}px LeagueSpartan`;
-                this.ctx.fillText(l, this.offsetLeft, this.offsetTop);
 
-                this.offsetTop += fontSize
+
+                let l_liste = l.split(" ")
+                let text = l_liste[0]
+                let i = 1
+
+                while (text != undefined) {
+                    if (i == l_liste.length){
+                        this.ctx.fillText(text, this.offsetLeft, this.offsetTop);
+                        this.offsetTop += fontSize
+                        break
+                    }
+
+                    let w = l_liste[i]
+                    if (this.ctx.measureText(text + " " + w).width > 1140){
+                        this.ctx.fillText(text, this.offsetLeft, this.offsetTop);
+                        this.offsetTop += fontSize
+
+                        text = w
+                    }
+                    else {
+                        text += " " + w
+                    }
+                    i++
+                }
+
             }
         }
 
@@ -167,6 +191,12 @@
 
     })
 
+    var download = function(){
+        var link = document.createElement('a');
+        link.download = 'idd.png';
+        link.href = canvas.toDataURL()
+        link.click();
+    }
 
 </script>
 <div class="main">
@@ -174,25 +204,29 @@
     <div>
         <canvas bind:this={canvas}></canvas>
     </div>
-    <form>
+    <form spellcheck="false">
 
-        <label>Titre</label>
-        <input bind:value={title}>
-        <label>Image</label>
-        <input type="file" bind:files={files}>
+        <label for="titre">Titre</label>
+        <input name="titre" bind:value={title}>
+        <label for="image">Image</label>
+        <input name="image" type="file" bind:files={files}>
 
 
-        <label>Contenu</label>
-        <textarea bind:value={texte} cols="30" rows="10"></textarea>
-        <label>Template</label>
-        <select bind:value={variante}>
+        <label for="texte">Contenu</label>
+        <textarea name="texte" bind:value={texte} rows="11"  ></textarea>
+
+        <label for="template">Template</label>
+
+        <select name="template" bind:value={variante}>
             <option value="0">Fond Demo (ne pas utiliser, juste pour debug)</option>
             <option value="1" selected={true}>Fond 1</option>
             <option value="2">Fond 2</option>
             <option value="3">Fond 3</option>
             <option value="4">Fond 4</option>
         </select>
+
     </form>
+    <Button on:click={download}>Télécharger</Button>
 
 </div>
 <style>
@@ -233,6 +267,7 @@
     textarea{
         resize: vertical;
     }
+
 
 
 </style>
