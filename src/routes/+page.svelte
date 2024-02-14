@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    let title = $state("GRAND TITRE")
+    let title = $state("Grand titre")
     let texte = $state("#Titre\nsalut ceci est une démonstration")
-    let variante = $state("")
+    let variante:string = $state(undefined)
     let files:FileList|undefined = $state()
 
     let canvas : HTMLCanvasElement
@@ -21,21 +21,29 @@
 
     class Template {
 
-        private offset:number
+        private offsetTop:number
+        private offsetLeft:number
         private background:Promise<HTMLImageElement>
         private image:Promise<HTMLImageElement>|undefined
         private title:string
         private texte:string
+        private ctx:CanvasRenderingContext2D
+        private canvas:HTMLCanvasElement
 
-        private imageHeight = 400
-        private padding = 150
+        private imageHeight = 500
+        private padding = 50
 
-        constructor(backgroundURL:string,imageFiles:FileList|undefined,offset:number,texte:string,title:string){
+        constructor(backgroundURL:string,imageFiles:FileList|undefined,offsetLeft:number,offsetTop:number,texte:string,title:string){
+            this.canvas = document.createElement("canvas")
+            this.canvas.height = 1440
+            this.canvas.width = 1440
+            this.ctx = this.canvas.getContext('2d')!
 
             this.texte = texte
             this.title = title
 
-            this.offset = offset
+            this.offsetLeft = offsetLeft
+            this.offsetTop = offsetTop
 
             let background = new Image()
             background.width = 1440
@@ -74,32 +82,32 @@
 
         }
 
-        private async drawBackground(ctx:CanvasRenderingContext2D){
+        private async drawBackground(){
             let bg = await this.background
-            ctx.drawImage(bg, 0, 0);
+            this.ctx.drawImage(bg, 0, 0, 1440, 1440);
         }
 
-        private drawTitle(ctx:CanvasRenderingContext2D) {
-            ctx.font = "bold 130px LeagueSpartan";
-            ctx.textAlign = "center";
-            ctx.fillStyle = "#ffffff"
+        private drawTitle() {
+            this.ctx.font = "900 120px LeagueSpartan";
+            this.ctx.textAlign = "left";
+            this.ctx.fillStyle = "#D82B2B"
             
-            this.offset += this.padding
-            ctx.fillText(this.title,720,260)
+            this.ctx.fillText(this.title,this.offsetLeft + 40,this.offsetTop)
+            this.offsetTop += 120*1.25
         }
 
-        private async drawImage(ctx:CanvasRenderingContext2D){
+        private async drawImage(){
 
             let img = await this.image
 
             if (img === undefined) {return}
 
-            ctx.drawImage(img, 200, this.offset, img.width, img.height);
-            this.offset += this.imageHeight
+            this.ctx.drawImage(img, 1440/2 - img.width/2, this.offsetTop, img.width, img.height);
+            this.offsetTop += this.imageHeight
         }
 
-        private drawTexte(ctx:CanvasRenderingContext2D){
-            ctx.textAlign = "left";
+        private drawTexte(){
+            this.ctx.textAlign = "left";
 
             let p = this.texte.split("\n")
 
@@ -107,29 +115,36 @@
 
             for (let l of p){
                 if (l.startsWith("#")){
-                    ctx.font = "bold 90px LeagueSpartan";
-                    ctx.fillStyle = "#ff0000"
-                    lineheight = 90*1.25
+                    this.ctx.font = "600 80px LeagueSpartan";
+                    this.ctx.fillStyle = "#262626"
+                    lineheight = 60*1.25
 
-                    ctx.fillText(l.slice(1), 200, this.offset);
+                    this.ctx.fillText(l.slice(1), this.offsetLeft, this.offsetTop);
                 }
                 else {
-                    ctx.font = "bold 65px LeagueSpartan";
-                    ctx.fillStyle = "#000000"
-                    lineheight = 65*1.25
+                    this.ctx.font = "500 60px LeagueSpartan";
+                    this.ctx.fillStyle = "#262626"
+                    lineheight = 40*1.25
 
-                    ctx.fillText(l, 200, this.offset);
+                    this.ctx.fillText(l, this.offsetLeft, this.offsetTop);
                 }
 
-                this.offset += lineheight
+                this.offsetTop += lineheight*1.25
             }
         }
 
-        async draw(ctx : CanvasRenderingContext2D) {
-            await this.drawBackground(ctx)
-            await this.drawImage(ctx)
-            this.drawTitle(ctx)
-            this.drawTexte(ctx)
+        async draw(destctx : CanvasRenderingContext2D) {
+            this.ctx.clearRect(0, 0, 1440, 1440);
+
+            await this.drawBackground()
+            this.drawTitle()
+            // this.offsetTop += this.padding
+            this.drawTexte()
+            // this.offsetTop += this.padding
+            await this.drawImage()
+
+            destctx.drawImage(this.canvas, 0, 0);
+
         }
 
     }
@@ -137,8 +152,18 @@
 
     $effect(() => {
 
-        template = new Template("./template.png",files,400,texte,title)
-        template.draw(ctx)
+        if (variante == "1"){
+            template = new Template("./fond_idd_1.png",files,200,250,texte,title)
+            template.draw(ctx)
+        }
+        else if (variante == "2"){
+            template = new Template("./fond_idd_2.png",files,200,250,texte,title)
+            template.draw(ctx)
+        }
+        else if (variante == "3") {
+            template = new Template("./fond_idd_3.png",files,200,250,texte,title)
+            template.draw(ctx)
+        }
 
     })
 
@@ -161,7 +186,9 @@
         <textarea bind:value={texte} cols="30" rows="10"></textarea>
         <label>Template</label>
         <select bind:value={variante}>
-
+            <option value="1" selected={true}>Fond 1</option>
+            <option value="2">Fond 2</option>
+            <option value="3">Fond 3</option>
         </select>
     </form>
 
