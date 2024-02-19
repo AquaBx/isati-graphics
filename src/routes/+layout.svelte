@@ -2,10 +2,12 @@
 
     import Header from "$lib/components/individuels/Header.svelte"
     import { fade  } from 'svelte/transition';
+    import Button from "$lib/components/individuels/Button.svelte";
     
     export let data
 
 </script>
+
 
 <svelte:head>
     <title>ISATI BDE</title>
@@ -20,6 +22,11 @@
 
     <Header></Header>
     
+    <div style="display:flex;justify-content: space-evenly;">
+        <a href={"./mails"}><Button>Editeur Mails</Button></a>
+        <a href={"./postes"}><Button>Editeur Postes</Button></a>
+    </div>
+
     {#key data.pathname}
         <div id="content" in:fade={{ duration: 1000}}>
             <slot></slot>

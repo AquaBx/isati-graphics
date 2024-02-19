@@ -1,8 +1,17 @@
 @font-face {
     font-family: "LeagueSpartan";
-    src: url('./LeagueSpartan.ttf');
+    src: url('./fonts/LeagueSpartan.ttf');
 }
 
+@font-face {
+    font-family: "NanamiBlack";
+    src: url('./fonts/Nanami-Heavy.otf');
+}
+
+@font-face {
+    font-family: "Nanami";
+    src: url('./fonts/Nanami-Light.otf');
+}
 
 
 :root {
