@@ -243,31 +243,4 @@
         gap:10px;
     }
     
-    
-    form {
-        gap:10px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    label,input,select,textarea {
-        font-size: 20px;
-        color : var(--text);
-    }
-    input,select,textarea{
-        padding:10px;
-        outline: unset;
-        border: unset;
-        background-color: var(--container);
-        box-shadow: var(--shadow);
-        border-radius: 10px;
-    }
-
-
-    textarea{
-        resize: vertical;
-    }
-
-
-
 </style>
