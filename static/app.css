@@ -55,6 +55,8 @@ h1,h2,h3,h4,h5,h6,p{
 
 h1,h2,h3,h4,h5,h6,p {
     color: var(--text);
+    font-family: "NanamiBlack";
+
 }
 
 button {
@@ -69,6 +71,7 @@ form {
 
 label,input,select,textarea {
     font-size: 20px;
+    font-family: "Nanami";
     color : var(--text);
 }
 input,select,textarea{
